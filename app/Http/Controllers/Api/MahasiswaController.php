@@ -10,9 +10,17 @@ use Illuminate\Support\Facades\Validator;
 
 class MahasiswaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $listMhs = Mahasiswa::latest()->paginate(5);
+        $search = $request->query('search');
+
+        $listMhs = Mahasiswa::latest();
+
+        if ($search) {
+            $listMhs = $listMhs->where('nama', 'like', '%'.$search.'%')->orWhere('nim', 'like', '%'.$search.'%');
+        }
+
+        $listMhs = $listMhs->paginate(5);
 
         return new mahasiswaResource(true, 'List Data Mahasiswa Tampil', $listMhs);
     }
